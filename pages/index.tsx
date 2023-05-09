@@ -1,26 +1,15 @@
-import React from 'react';
-import { useRouter } from 'next/router';
+import type { NextPage } from 'next';
+import { Layout } from '@/layout/layout';
+import { Content } from '../components/Content';
+// import { AcmeLogo } from './components/AcmeLogo';
+// import { SearchIcon } from './components/SearchIcon';
 
-const HomePage = () => {
-  const router = useRouter();
-  const { success } = router.query;
-
-  const authorizeZoom = async () => {
-    window.location.href = '/api/zoom/auth';
-  };
-
-  const createZoomMeeting = () => {
-    // Redirect to the create-meeting page
-    router.push('/create-meeting');
-  };
-
+const Home: NextPage = () => {
   return (
-    <div>
-      {success && <div>{success}</div>}
-      <button onClick={authorizeZoom}>Authorize Zoom</button>
-      <button onClick={createZoomMeeting}>Create Zoom Meeting</button>
-    </div>
+    <Layout>
+      <Content />
+    </Layout>
   );
 };
 
-export default HomePage;
+export default Home;
