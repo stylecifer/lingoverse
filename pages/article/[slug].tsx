@@ -1,12 +1,22 @@
 // pages/article/[slug].tsx
 import { GetStaticProps, GetStaticPaths } from 'next';
 import { ParsedUrlQuery } from 'querystring';
-import { Container, Text, Image, } from '@nextui-org/react';
+import { Container, Text, Image, Spacer} from '@nextui-org/react';
 import articles from '../api/data';
 import { Layout } from '@/layout/layout';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { CommentList } from '@/components/CommentList';
+import { supabase } from '@/lib/supabase';
 import { CommentForm } from '@/components/CommentForm';
-
+ 
+interface Comment { 
+  id: string;
+  article_slug: string;
+  name: string;
+  email: string;
+  content: string;
+  created_at: Date;
+}
 interface ArticleType {
   id: string;
   title: string;
@@ -27,6 +37,44 @@ const getArticleBySlug = async (slug: string): Promise<ArticleType | undefined> 
   return article;
 };
 const Article: React.FC<ArticleProps> = ({ article }) => {
+  const [comments, setComments] = useState<Comment[]>([]);
+
+  useEffect(() => {
+    fetchComments();
+  }, [article.slug]);
+
+  const fetchComments = async () => {
+    const { data, error } = await supabase
+    .from('comments')
+    .select('*')
+    .eq('article_slug', article.slug)
+    .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('🙀 Error fetching comments:', error.message);
+    } else {
+      setComments(data as Comment[]);
+    }
+  };
+
+  const handleNewComment = async (comment: Comment) => {
+    // Create a new array with the new comment at the start
+    const updatedComments = [comment, ...comments];
+    // Update the state with the new array
+    setComments(updatedComments);
+    console.log(updatedComments);
+    const {error}= await supabase
+      .from('comments')
+      .insert([{
+        article_slug: article.slug,
+        content: comment.content,
+        name: comment.name,
+        email: comment.email,}
+      ]);
+      if (error) {
+        console.error('🤦🏻‍♂️ Error inserting comment:', error.message);
+        // Revent to previous state if there's an error
+ }};
   return (
     <Layout>
       {article ? (
@@ -51,8 +99,21 @@ const Article: React.FC<ArticleProps> = ({ article }) => {
               ) : (
                 <Image src={article.coverImage} width="100%" height="auto" />
               )}
+              <Spacer y={2} />
               <div dangerouslySetInnerHTML={{ __html: article.content }} />
-              <CommentForm articleSlug={article.slug} />         
+              <Spacer y={2} />
+              <Text h3>Leave a comment</Text> 
+              <Text size={18} b css={{
+          textGradient: "45deg, $yellow600 -20%, $red600 100%",
+        }}>The Lingoverse will know your name</Text><span>  😉  </span>
+              
+              <Spacer y={2} />
+              <CommentForm
+                articleSlug={article.slug}
+                onCommentSubmit={handleNewComment} />
+                <Spacer y={2} />
+              <CommentList comments={comments}  />
+              <Spacer y={2} />
             </Container>
           ) : (
             <Container>
