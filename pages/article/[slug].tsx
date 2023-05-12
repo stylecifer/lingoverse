@@ -1,7 +1,8 @@
 // pages/article/[slug].tsx
 import { GetStaticProps, GetStaticPaths } from 'next';
 import { ParsedUrlQuery } from 'querystring';
-import { Container, Text, Image, Spacer} from '@nextui-org/react';
+import { Container, Text, Image, Spacer} from '@nextui-org/react'; 
+import { Box } from "@/components/Box";
 import articles from '../api/data';
 import { Layout } from '@/layout/layout';
 import React, { useState, useEffect } from 'react';
@@ -100,7 +101,17 @@ const Article: React.FC<ArticleProps> = ({ article }) => {
                 <Image src={article.coverImage} width="100%" height="auto" />
               )}
               <Spacer y={2} />
-              <div dangerouslySetInnerHTML={{ __html: article.content }} />
+              {/* add the content tha came from the api */} 
+              <Box style={{maxWidth: "800px", fontSize: '18px', margin: "auto"}}>
+              <style>
+    {`
+      .content p {
+        font-size: 23px;
+      }
+    `}
+  </style>
+              <div className='content' dangerouslySetInnerHTML={{ __html: article.content }} />
+              
               <Spacer y={2} />
               <Text h3>Leave a comment</Text> 
               <Text size={18} b css={{
@@ -113,7 +124,7 @@ const Article: React.FC<ArticleProps> = ({ article }) => {
                 onCommentSubmit={handleNewComment} />
                 <Spacer y={2} />
               <CommentList comments={comments}  />
-              <Spacer y={2} />
+              <Spacer y={2} /></Box>
             </Container>
           ) : (
             <Container>

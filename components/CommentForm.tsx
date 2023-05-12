@@ -89,7 +89,8 @@ export const CommentForm: React.FC<CommentFormProps> = ({ articleSlug, onComment
         value={email}
         onChange={handleEmailChange as any}
         placeholder="Your email (required)"
-        width="100%" />
+        width="100%"
+        required />
         <Spacer y={1} />
       <Textarea
         value={content}
@@ -97,6 +98,7 @@ export const CommentForm: React.FC<CommentFormProps> = ({ articleSlug, onComment
         placeholder="Leave a comment"
         width="100%"
         minRows={4}
+        required
       />
       <Spacer y={1} />
       <Button type="submit" color="primary" auto>
