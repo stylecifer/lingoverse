@@ -1,12 +1,6 @@
+//CommentList.tsx
 import { Text, Spacer } from '@nextui-org/react';
-
-interface Comment {
-  id: string;
-  name: string;
-  email: string;
-  content: string;
-  created_at: Date;
-}
+import { CommentResponse as Comment} from '@/types'
 
 interface CommentListProps {
   comments: Comment[];

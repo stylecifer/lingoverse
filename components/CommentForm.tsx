@@ -1,16 +1,7 @@
-//comment form componet
 import { ChangeEvent, useState } from 'react';
 import { Button, Input, Spacer, Textarea } from '@nextui-org/react';
-import {supabase} from '@/lib/supabase'
+import { CommentResponse } from '@/types';
 
-interface CommentResponse {
-  id: string;
-  article_slug: string;
-  name: string;
-  email: string;
-  content: string;
-  created_at: Date;
-}
 interface CommentFormProps {
   articleSlug: string;
   onCommentSubmit: (comment: CommentResponse) => void;
@@ -18,23 +9,18 @@ interface CommentFormProps {
 
 export const CommentForm: React.FC<CommentFormProps> = ({ articleSlug, onCommentSubmit }) => {
   const [content, setContent] = useState('');
-  //let's add two fields for name optional and email required
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
-  }
+  const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => setName(e.target.value);
+  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value);
+  const handleContentChange = (e: ChangeEvent<HTMLTextAreaElement>) => setContent(e.target.value);
 
-  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  }
-  const handleContentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(e.target.value);
-  }
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log('🧐 Submitting comment...');
+
+    setIsSubmitting(true);
 
     const newComment = {
       article_slug: articleSlug,
@@ -42,40 +28,33 @@ export const CommentForm: React.FC<CommentFormProps> = ({ articleSlug, onComment
       email,
       content,
       created_at: new Date(),
-    }
+    };
+
     try {
-      const { error } = await supabase
-        .from('comments')
-        .insert([newComment]);
-      if (error) {
-        throw error;
+      const res = await fetch('/api/create-comment', { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newComment)
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || '😱 Something went wrong');
       }
 
- const { data: commentData, error: fetchError } = await supabase
-      .from('comments')
-      .select('*')
-      .eq('article_slug', articleSlug)
-      .order('created_at', { ascending: false })
-      .limit(1);
-
-    if (fetchError || !commentData || commentData.length === 0) {
-      throw fetchError || new Error('😭 No data returned from Supabase');
+      console.log('🥳 Comment submitted successfully!');
+      onCommentSubmit(newComment as CommentResponse);
+    } catch (error: any) {
+      console.error('🙀 Error submitting comment:', error.message);
+    } finally {
+      setName('');
+      setEmail('');
+      setContent('');
+      setIsSubmitting(false);
     }
-
-    const fetchedComment = commentData[0];
-    if (!fetchedComment.id) {
-      throw new Error('⛔ Fetched comment has no ID ');
-    }
-
-    console.log('🥳 Comment submitted successfully!');
-    onCommentSubmit(fetchedComment as CommentResponse);
-    setName('');
-    setEmail('');
-    setContent('');
-  } catch (error: any) {
-    console.error('🙀 Error submitting comment:', error.message);
-  }
-};
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -91,7 +70,7 @@ export const CommentForm: React.FC<CommentFormProps> = ({ articleSlug, onComment
         placeholder="Your email (required)"
         width="100%"
         required />
-        <Spacer y={1} />
+      <Spacer y={1} />
       <Textarea
         value={content}
         onChange={handleContentChange as any}
@@ -101,7 +80,7 @@ export const CommentForm: React.FC<CommentFormProps> = ({ articleSlug, onComment
         required
       />
       <Spacer y={1} />
-      <Button type="submit" color="primary" auto>
+      <Button type="submit" color="primary" auto disabled={isSubmitting}>
         Submit
       </Button>
     </form>

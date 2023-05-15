@@ -9,15 +9,8 @@ import React, { useState, useEffect } from 'react';
 import { CommentList } from '@/components/CommentList';
 import { supabase } from '@/lib/supabase';
 import { CommentForm } from '@/components/CommentForm';
- 
-interface Comment { 
-  id: string;
-  article_slug: string;
-  name: string;
-  email: string;
-  content: string;
-  created_at: Date;
-}
+import { CommentResponse as  Comment  } from '@/types'
+
 interface ArticleType {
   id: string;
   title: string;
@@ -45,17 +38,12 @@ const Article: React.FC<ArticleProps> = ({ article }) => {
   }, [article.slug]);
 
   const fetchComments = async () => {
-    const { data, error } = await supabase
-    .from('comments')
-    .select('*')
-    .eq('article_slug', article.slug)
-    .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('🙀 Error fetching comments:', error.message);
-    } else {
-      setComments(data as Comment[]);
+    const res = await fetch(`/api/fetch-comments?article_slug=${article.slug}`)
+    const data = await res.json()
+    if (!res.ok) {
+      throw new Error(data.message)
     }
+    setComments(data as Comment[]);
   };
 
   const handleNewComment = async (comment: Comment) => {
@@ -64,18 +52,7 @@ const Article: React.FC<ArticleProps> = ({ article }) => {
     // Update the state with the new array
     setComments(updatedComments);
     console.log(updatedComments);
-    const {error}= await supabase
-      .from('comments')
-      .insert([{
-        article_slug: article.slug,
-        content: comment.content,
-        name: comment.name,
-        email: comment.email,}
-      ]);
-      if (error) {
-        console.error('🤦🏻‍♂️ Error inserting comment:', error.message);
-        // Revent to previous state if there's an error
- }};
+};
   return (
     <Layout>
       {article ? (
@@ -103,28 +80,33 @@ const Article: React.FC<ArticleProps> = ({ article }) => {
               <Spacer y={2} />
               {/* add the content tha came from the api */} 
               <Box style={{maxWidth: "800px", fontSize: '18px', margin: "auto"}}>
-              <style>
-    {`
-      .content p {
-        font-size: 23px;
-      }
-    `}
-  </style>
-              <div className='content' dangerouslySetInnerHTML={{ __html: article.content }} />
-              
-              <Spacer y={2} />
-              <Text h3>Leave a comment</Text> 
-              <Text size={18} b css={{
-          textGradient: "45deg, $yellow600 -20%, $red600 100%",
-        }}>The Lingoverse will know your name</Text><span>  😉  </span>
-              
-              <Spacer y={2} />
-              <CommentForm
-                articleSlug={article.slug}
-                onCommentSubmit={handleNewComment} />
+                    <style>
+                            {`
+                              .content p {
+                                font-size: 23px;
+                              }
+                            `}
+                    </style>
+                <div className='content' dangerouslySetInnerHTML={{ __html: article.content }} />
+                
                 <Spacer y={2} />
-              <CommentList comments={comments}  />
-              <Spacer y={2} /></Box>
+                <Text h3>Leave a comment</Text> 
+                <Text 
+                      size={18} 
+                      b 
+                      css={{
+                            textGradient: "45deg, $yellow600 -20%, $red600 100%",
+                          }}>The Lingoverse will know your name </Text>
+                <span>  😉  </span>
+                
+                <Spacer y={2} />
+                <CommentForm
+                  articleSlug={article.slug}
+                  onCommentSubmit={handleNewComment} />
+                  <Spacer y={2} />
+                <CommentList comments={comments}  />
+                <Spacer y={2} />
+              </Box>
             </Container>
           ) : (
             <Container>
