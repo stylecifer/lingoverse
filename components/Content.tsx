@@ -30,7 +30,7 @@ export const Content = () => (
                       <Text size={40}>
                           Healthy habits for your brain
                       </Text>
-                      <Link href="http://localhost:3000/article/experience-the-magic-of-language-exchange-with-millen-k">
+                      <Link href="/article/experience-the-magic-of-language-exchange-with-millen-k">
                         <Button 
                           size="md"
                           shadow color="gradient"
