@@ -5,7 +5,7 @@ const articles = [
         title: 'Experience the Magic of Language Exchange with Millen K',
         slug:'experience-the-magic-of-language-exchange-with-millen-k',
         coverImage: 'https://via.placeholder.com/1200x600',
-        videoUrl: 'https://www.youtube.com/embed/JDL8l91m3Zo',
+        videoUrl: 'https://www.youtube.com/embed/1KIZt8wqIy8',
         content: `
           <p>Hello there! I hope you're doing well. It's Antonio here, but you might know me as 'El Toñito' when we're navigating through the vast expanse of language learning into the Lingoverse.</p><br>
 

@@ -6,11 +6,11 @@ const LingoLogo: React.FC = () => {
   return (
     <Link href={'/'}>
         <Image
-        width={256/2}
-        height={78/2}  
-        src="/NavbarBrandLingoV.png"
-        alt="Default Image"
-        objectFit="cover"
+            width={256/2}
+            height={78/2}
+            src="/NavbarBrandLingoV.png"
+            alt="Default Image"
+            objectFit="cover"
         />
 
     </Link>
