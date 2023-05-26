@@ -62,6 +62,9 @@ export const AppNavbar: React.FC = () => {
               placeholder="Search..."
             />
           </Navbar.Item> */}
+
+
+          {/* I want to replace this Dropdown component with a Login or Signup button when the visitor is not Authenticated and display it this way when the authenticated process is complete but with the real info of the user */}
           <Dropdown placement="bottom-right">
             <Navbar.Item>
               <Dropdown.Trigger>

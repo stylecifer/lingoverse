@@ -28,6 +28,9 @@
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
-    "@types/cookie": "^0.5.1"
-  }
+    "@types/cookie": "^0.5.1",
+    "supabase": "^1.62.3"
+  },
+  "update-types": "npx supabase gen types typescript --project-id gabunftjnrxhogotrxto > types/supabase.ts"
+
 }
