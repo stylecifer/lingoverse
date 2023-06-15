@@ -6,6 +6,8 @@ import { SessionContextProvider } from '@supabase/auth-helpers-react';
 import { useState } from 'react';
 import {useSSR} from '@nextui-org/react';
 import { Session } from 'inspector';
+import { AppNavbar } from '@/components/Navbar';
+
 
 const darkTheme = createTheme({type: "dark"});
 
@@ -18,6 +20,7 @@ export default function App({ Component, pageProps }: AppProps<{initialSession: 
             supabaseClient={supabaseClient}
     >
           <NextUIProvider theme={darkTheme}>
+            <AppNavbar />
             <Component {...pageProps} />
           </NextUIProvider>
         </SessionContextProvider>

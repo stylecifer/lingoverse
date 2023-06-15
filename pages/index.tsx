@@ -11,11 +11,12 @@ const Home: NextPage = () => {
   const supabase = useSupabaseClient()
   return (
     <Layout>
-      {!session ? (
-        <Content />
+              <Content />
+
+      {/* {!session ? (
       ) : ( 
         <Account session={session}/>
-      )}
+      )} */}
     </Layout>
   );
 };

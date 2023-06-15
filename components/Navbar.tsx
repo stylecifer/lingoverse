@@ -1,31 +1,29 @@
 // AppNavbar.tsx
-import React from "react";
-import { Navbar, Text, Avatar, Dropdown, Input } from "@nextui-org/react";
 import { SearchIcon } from "./SearchIcon";
+import React, {useEffect} from "react";
+import { Button, Navbar, Text, Avatar, Dropdown, Input } from "@nextui-org/react";
 import LingoLogo from "./LingoLogo";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
 
 
 export const AppNavbar: React.FC = () => {
+  const supabaseClient = useSupabaseClient();
+  const user  = useUser();
+  const router = useRouter();
+
+  function signOutUser() {
+    supabaseClient.auth.signOut();
+    router.push("/"); //localhost
+  }
+
   return (
     <Navbar isBordered variant="sticky">
-        <Navbar.Brand>
-      
+        <Navbar.Brand>      
              <LingoLogo />
-        
-         
-          {/* <Text b color="inherit" css={{ mr: "$11" }} hideIn="xs">
-            ACME
-          </Text> */}
-          
         </Navbar.Brand>
-        {/* <Navbar.Content hideIn="xs" variant="highlight">
-            <Navbar.Link isActive href="/signin">
-              Dashboard
-            </Navbar.Link>
-            <Navbar.Link href="#">Team</Navbar.Link>
-            <Navbar.Link href="#">Activity</Navbar.Link>
-            <Navbar.Link href="#">Settings</Navbar.Link>
-          </Navbar.Content> */}
+        
         <Navbar.Content
                         css={{
                           "@xsMax": {
@@ -34,38 +32,14 @@ export const AppNavbar: React.FC = () => {
                           },
                         }}
         >
-          {/* <Navbar.Item
-                        css={{
-                          "@xsMax": {
-                            w: "100%",
-                            jc: "center",
-                          },
-                        }}
-          >
-            <Input
-              clearable
-              contentLeft={
-                <SearchIcon fill="var(--nextui-colors-accents6)" size={16} />
-              }
-              contentLeftStyling={false}
-              css={{
-                  w: "100%",
-                  "@xsMax": {
-                    mw: "300px",
-                  },
-                  "& .nextui-input-content--left": {
-                    h: "100%",
-                    ml: "$4",
-                    dflex: "center",
-                    },
-              }}
-              placeholder="Search..."
-            />
-          </Navbar.Item> */}
-
-
-          {/* I want to replace this Dropdown component with a Login or Signup button when the visitor is not Authenticated and display it this way when the authenticated process is complete but with the real info of the user */}
-          <Dropdown placement="bottom-right">
+          {!user ? 
+          <Navbar.Link href="/login">
+          <Button auto flat >
+              Login
+          </Button>
+          </Navbar.Link>
+          : 
+            <Dropdown placement="bottom-right">
             <Navbar.Item>
               <Dropdown.Trigger>
                 <Avatar
@@ -86,9 +60,9 @@ export const AppNavbar: React.FC = () => {
                 <Text b color="inherit" css={{ d: "flex" }}>
                   Signed in as
                 </Text>
-                <Text b color="inherit" css={{ d: "flex" }}>
-                  zoey@example.com
-                </Text>
+              <Text b color="inherit" css={{ d: "flex" }}>
+                Hey, {user?.email}
+              </Text>
               </Dropdown.Item>
               <Dropdown.Item key="settings" withDivider>
                 My Settings
@@ -103,12 +77,15 @@ export const AppNavbar: React.FC = () => {
                 Help & Feedback
               </Dropdown.Item>
               <Dropdown.Item key="logout" withDivider color="error">
-                Log Out
+              <Button auto flat onPress={()=>signOutUser()}>
+                                Log Out
+              </Button>
               </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
+          
+          }
         </Navbar.Content>
       </Navbar>
   );
 };
-
