@@ -5,7 +5,8 @@ import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/router';
 import { GetServerSidePropsContext } from 'next'; 
 import { ParsedUrlQuery } from 'querystring';
-import { Database } from '@/lib/database.types'
+import { Database } from '@/types/supabase'
+
 
 interface IParams extends ParsedUrlQuery {
   id: string
@@ -18,7 +19,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext<IPar
   let { data: event, error } = await supabase
     .from('events')
     .select('*')
-    .eq('id', id)
+    .eq('event_id', parseInt(id))
     .single();
 
   if (error) console.log("Error fetching event: ", error);
@@ -29,37 +30,40 @@ export async function getServerSideProps(context: GetServerSidePropsContext<IPar
     },
   };
 }
-interface Event {
-  id: string;
-  title: string;
-  date: string;
-  start_time: string;
-  end_time: string;
-  zoom_link: string;
-  description: string;
-  // any other properties your event might have
-}
+// interface Event {
+//   id: string;
+//   title: string;
+//   date: string;
+//   start_time: string;
+//   end_time: string;
+//   zoom_link: string;
+//   description: string;
+//   // any other properties your event might have
+// }
 
-export default function EventPage({ event }: { event: Event }) {
+export default function EventPage({ event }: { event: Database['public']['Tables']['events']['Row'] }) {
+
+
   const router = useRouter();
-  const [registration, setRegistration] = useState(null);
+  const [registration, setRegistration] = useState<null | { [key: string]: any }>(null);
   const [loading, setLoading] = useState(true);
+  
 
   useEffect(() => {
     checkRegistration();
   }, []);
 
-  async function checkRegistration() {
-    const { user: userFromAuth, session  } = supabase.auth;
-    
+  async function checkRegistration() {      
+    const { data: { user } } = await supabase.auth.getUser()    
+
     if (user) {
       let { data: registration, error } = await supabase
         .from('event_registrations')
         .select('*')
-        .eq('user_id', user.id)
-        .eq('event_id', event.id)
+        .eq('user_id', user.id)        
+        .eq('event_id', event.event_id)
         .single();
-
+  
       if (error) console.log("Error fetching registration: ", error);
       
       setRegistration(registration);
@@ -67,7 +71,7 @@ export default function EventPage({ event }: { event: Event }) {
     
     setLoading(false);
   }
-
+  
   async function registerUser() {
     // handle user registration logic here
     // After registration, recheck the registration status
@@ -78,7 +82,9 @@ export default function EventPage({ event }: { event: Event }) {
   const eventStartTime = new Date(event.start_time).getTime();
   const eventEndTime = new Date(event.end_time).getTime();
 
-  let buttonText, buttonAction, buttonDisabled;
+  let buttonText: string | undefined;
+  let buttonAction: (() => void) | null | undefined;
+  let buttonDisabled: boolean | undefined;
 
   if (!loading) {
     if (!registration) {
@@ -91,7 +97,13 @@ export default function EventPage({ event }: { event: Event }) {
       buttonDisabled = true;
     } else if (currentTime >= eventStartTime - 5 * 60 * 1000 && currentTime <= eventEndTime) {
       buttonText = "Join Event";
-      buttonAction = () => router.push(event.location);
+      if(event.zoom_link){
+        buttonAction = () => {
+          if(event.zoom_link !== null) {
+            router.push(event.zoom_link);
+          }
+        }
+      }
       buttonDisabled = false;
     } else {
       buttonText = "Event Ended";
@@ -103,9 +115,15 @@ export default function EventPage({ event }: { event: Event }) {
   return (
     <>
       {/* Display event details here */}
-      <h1>{event.title}</h1>
-      <p>{event.description}</p>
-      <button onClick={buttonAction} disabled={buttonDisabled}>
+      <h1>{event.event_name}</h1>
+      <p>{event.event_description}</p>
+      <button onClick={(event) => {
+        event.preventDefault(); // Prevent the default button click action
+        if (buttonAction) {
+          buttonAction();
+        }
+      }}
+      disabled={buttonDisabled}>
         {loading ? "Loading..." : buttonText}
       </button>
     </>
