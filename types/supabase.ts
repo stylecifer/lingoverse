@@ -33,6 +33,40 @@ export interface Database {
         }
         Relationships: []
       }
+      attendees: {
+        Row: {
+          id: number
+          joined_at: string
+          meeting_id: number
+          user_id: string
+        }
+        Insert: {
+          id?: number
+          joined_at: string
+          meeting_id: number
+          user_id: string
+        }
+        Update: {
+          id?: number
+          joined_at?: string
+          meeting_id?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendees_meeting_id_fkey"
+            columns: ["meeting_id"]
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attendees_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       comments: {
         Row: {
           article_slug: string | null
@@ -63,63 +97,48 @@ export interface Database {
         }
         Relationships: []
       }
-      event_registrations: {
+      meetings: {
         Row: {
-          created_at: string | null
-          event_id: number | null
+          date: string | null
+          description: string | null
+          duration: number | null
+          id: number
+          inserted_at: string
+          time: string | null
+          title: string | null
           user_id: string
+          zoom_link: string | null
         }
         Insert: {
-          created_at?: string | null
-          event_id?: number | null
+          date?: string | null
+          description?: string | null
+          duration?: number | null
+          id?: number
+          inserted_at?: string
+          time?: string | null
+          title?: string | null
           user_id: string
+          zoom_link?: string | null
         }
         Update: {
-          created_at?: string | null
-          event_id?: number | null
+          date?: string | null
+          description?: string | null
+          duration?: number | null
+          id?: number
+          inserted_at?: string
+          time?: string | null
+          title?: string | null
           user_id?: string
+          zoom_link?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "event_registrations_event_id_fkey"
-            columns: ["event_id"]
-            referencedRelation: "events"
-            referencedColumns: ["event_id"]
-          },
-          {
-            foreignKeyName: "event_registrations_user_id_fkey"
+            foreignKeyName: "meetings_user_id_fkey"
             columns: ["user_id"]
             referencedRelation: "users"
             referencedColumns: ["id"]
           }
         ]
-      }
-      events: {
-        Row: {
-          end_time: string
-          event_description: string | null
-          event_id: number
-          event_name: string
-          start_time: string
-          zoom_link: string | null
-        }
-        Insert: {
-          end_time: string
-          event_description?: string | null
-          event_id?: number
-          event_name: string
-          start_time: string
-          zoom_link?: string | null
-        }
-        Update: {
-          end_time?: string
-          event_description?: string | null
-          event_id?: number
-          event_name?: string
-          start_time?: string
-          zoom_link?: string | null
-        }
-        Relationships: []
       }
       profiles: {
         Row: {

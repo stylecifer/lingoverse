@@ -3,11 +3,10 @@ import { GetStaticProps, GetStaticPaths } from 'next';
 import { ParsedUrlQuery } from 'querystring';
 import { Container, Text, Image, Spacer} from '@nextui-org/react'; 
 import { Box } from "@/components/Box";
-import articles from '../api/data';
+import articles from '@/pages/api/data';
 import { Layout } from '@/layout/layout';
 import React, { useState, useEffect } from 'react';
 import { CommentList } from '@/components/CommentList';
-import { supabase } from '@/lib/supabase';
 import { CommentForm } from '@/components/CommentForm';
 import { CommentResponse as  Comment  } from '@/types'
 
@@ -26,7 +25,7 @@ interface Params extends ParsedUrlQuery {
   id: string;
 }
 const getArticleBySlug = async (slug: string): Promise<ArticleType | undefined> => {
-  // Replace this with your actual data fetching logic if you're using a real database
+
   const article = articles.find((a) => a.slug === slug);
   return article;
 };
