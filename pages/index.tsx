@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import { Layout } from '@/layout/layout';
-import { Content } from '../components/Content';
+import { Content } from '@/components/Content';
 import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
 import Account from "@/components/Account"
 // import { AcmeLogo } from './components/AcmeLogo';
@@ -11,7 +11,10 @@ const Home: NextPage = () => {
   const supabase = useSupabaseClient()
   return (
     <Layout>
-              <Content />
+
+        <Content/>
+
+              
 
       {/* {!session ? (
       ) : ( 

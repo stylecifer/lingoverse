@@ -122,7 +122,7 @@ const MeetingPage: NextPage<MeetingPageProps> = ({ user }) => {
   )
 };
 
-export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+export const GetServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const supabase = useSupabaseClient();
   const {
     data: { session }

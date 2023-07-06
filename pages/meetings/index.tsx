@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { Text, Spacer, User, Button } from "@nextui-org/react";
 import Countdown from "react-countdown";
 
-const meetPage: NextPage = () => {
+const MeetPage: NextPage = () => {
     const supabaseClient = useSupabaseClient();
     const user = useUser();
     const router = useRouter();
@@ -138,4 +138,4 @@ const meetPage: NextPage = () => {
         </>
      );
 }
-export default meetPage;
+export default MeetPage;

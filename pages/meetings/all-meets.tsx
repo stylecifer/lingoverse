@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { Text } from '@nextui-org/react';
 import MeetingCard from '@/components/meetCards';
 
-const meetsFeed: NextPage = () => { 
+const MeetsFeed: NextPage = () => { 
     const supabaseClient = useSupabaseClient();
     const user = useUser();
     const router = useRouter();
@@ -42,4 +42,4 @@ const meetsFeed: NextPage = () => {
     )
 
 }
-export default meetsFeed;
+export default MeetsFeed;
